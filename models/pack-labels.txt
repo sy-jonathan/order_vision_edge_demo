@@ -1,0 +1,12 @@
+brown_bag
+burger_bottom_bun
+burger_box
+burger_patty
+burger_top_bun
+cheese_slice
+drink
+fries_box
+ketchup_packet
+lettuce
+mustard_packet
+tomato
