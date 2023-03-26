@@ -5,7 +5,7 @@ from tflite_support.task import vision
 
 
 class ModelReader:
-    def __init__(self, model, input_type, n_threads):
+    def __init__(self, model, input_type, n_threads, maxR, score_threshold):
         """
         Takes the following inputs
         model: Path to a tf-lite model
@@ -27,13 +27,13 @@ class ModelReader:
           use_coral=enable_edgetpu,
           num_threads=n_threads)
         detection_options = processor.DetectionOptions(
-          max_results= maxResults, 
-          score_threshold=scoreThreshold)
+          max_results= maxR, 
+          score_threshold=score_threshold)
         options = vision.ObjectDetectorOptions(
           base_options=base_options,
           detection_options=detection_options)
 
-        detector = vision.ObjectDetector.create_from_options(options)
+        self.model = vision.ObjectDetector.create_from_options(options)
 
     def get_image_labels(self, input):
         if input_type == 'video':
@@ -41,6 +41,8 @@ class ModelReader:
             frame = input.read()
         elif input_type == 'frame':
             frame = input
+        else:
+            raise Exception("Invalid input type")
 
         # Apparently we need to flip the image?
         frame = cv2.flip(frame, 1)
@@ -48,4 +50,4 @@ class ModelReader:
         rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         input_tensor = vision.TensorImage.create_from_array(rgb_image)
         # Get result
-        detection_result = detector.detect(input_tensor)
+        detection_result = self.model.detect(input_tensor)
